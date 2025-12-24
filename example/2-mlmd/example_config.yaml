@@ -1,0 +1,51 @@
+# Example configuration for Zhu–Nakamura MD.
+# Run with: python -m znmd.md_main --config example_config.yaml
+
+# Electronic structure backend:
+#   MNDO2020  : semiempirical MNDO2020
+#   GAMESSUS_MRSF : multi-reference spin-flip GAMESS
+#   MLFF      : neural-network potential (requires net_path/net_num)
+program_name: MLFF
+
+# Surface hopping algorithm: ZN (standard Zhu–Nakamura) or ZN_sim (simplified)
+hop_method: ZN
+
+# Simulation type:
+#   znmd : nonadiabatic Zhu–Nakamura dynamics
+#   bomd : Born–Oppenheimer dynamics
+cal_type: znmd
+
+# File names for the initial electronic structure input and momentum guesses.
+init_input: E.inp
+init_momentum: momentum.inp
+
+# Number of atoms in the system (needed for array allocations, etc.)
+atom_n: 8
+
+# Total number of electronic states tracked and initial state index (1-based).
+state_n: 2
+initial_state: 2
+
+# Propagation controls.
+total_time: 600        # fs of total simulation time
+time_step: 0.5         # fs per integration step
+hopping_threshold_value: 0.3  # eV threshold for hopping decisions
+
+# Location of the external program and CPU usage.
+# temp_dictory: /public/home/majianzheng/softwares/gamess
+temp_dictory: /public/home/majianzheng/softwares/mndo2020
+cpu_core: 64 # Parallelism is only effective for program_name: GAMESSUS_MRSF
+
+# Thermostat / ensemble settings.
+initial_temperature: 300   # K, temperature used to assign velocities
+target_temperature: 300    # K, Berendsen/Andersen target temperature
+fix_center: true           # Remove center-of-mass drift
+fix_MB_temper: true        # Apply Maxwell–Boltzmann distribution correction
+berendsen_taut: 100        # fs, Berendsen relaxation time
+andersen_prob: 0.1         # Probability of Andersen collisions per step
+ensemble_type: Verlet      # Integrator + thermostat combo keyword
+scal_step: 2               # Rescaling frequency for temperature control
+
+# Machine-learning force field settings (ignored unless program_name=MLFF).
+net_num: 2
+net_path: /public/home/majianzheng/LDMRM_ML/1-Templete_Mole_ML-2/5-ML_namd/net

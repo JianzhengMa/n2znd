@@ -1,0 +1,23 @@
+ $contrl coord=unique units=angs ispher=-1
+  NOSYM=0 maxit=100 exetyp=run nprint=-2 
+  icharg=0 mult=3 runtyp=GRADIENT
+  dfttyp=BHHLYP scftyp=ROHF TDDFT=MRSF $end
+ $scf DIRSCF=.t. diis=.f. SOSCF=.t. $end
+ $guess guess=huckel $end
+ $DFT IDCVER=3 $end
+ $system timlim=99999 MWORDS=500 $end
+ $basis GBASIS=N31 NGAUSS=6 NDFUNC=1 NPFUNC=1 $end
+ $TDDFT NSTATE=4 IROOT=1 TAMMD=.t. $END
+ $data
+LDMRM
+C1
+ C           6.0  -0.2571220900   1.1822019550   0.0271614436
+ N           7.0   0.2835034926   0.1457809082   0.4810860799
+ H           1.0  -1.0816849252   1.6996173027   0.5206125611
+ H           1.0   0.0981861456   1.6043621000  -0.9043912031
+ C           6.0  -0.2148956686  -0.3880435397   1.7234384631
+ H           1.0  -0.5446727099  -1.4111454216   1.5626293014
+ H           1.0   0.5981403286  -0.4266768194   2.4439734400
+ H           1.0  -1.0402414431   0.1857140847   2.1525932640
+ $end
+     

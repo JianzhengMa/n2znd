@@ -1,0 +1,175 @@
+# This file serves as a fast setting input file for Allegro.
+# Usually, you can only adjust tags in Important part
+
+# VERY IMPORTANT. Try different setting below
+run_name: baseline
+
+batch_size: 1 #batch size, we found it important to keep this small for most 
+              #applications including forces (1-5); for energy-only training, 
+              #higher batch sizes work better
+
+# Network
+l_max: 2 # maximum order l to use in spherical harmonics embedding, 
+          #1 is basedline (fast), 2 is more accurate, but slower, 3 highly accurate but slow
+
+# whether to include E(3)-symmetry / parity
+# allowed: o3_full, o3_restricted, so3
+parity: o3_full
+
+num_layers: 3 # number of tensor product layers, 1-3 usually best, more is more accurate but slower.
+              
+env_embed_multiplicity: 16 
+#128 features for both even and odd irreps, more is more accurate but slower, 
+# 1, 4, 8, 16, 64, 128 are good options to try depending on data set
+
+two_body_latent_mlp_latent_dimensions: [64, 128, 256, 512]
+# hidden layer dimensions of the 2-body embedding MLP
+
+# hidden layer dimensions of the latent MLP
+# these MLPs are cheap if you have have large l/env_embed_multiplicity, so a good place to put model capacity if you can afford it
+# only if you are in the ultra-fast/scalable regime, make these smaller
+latent_mlp_latent_dimensions: [512, 512, 512] 
+
+edge_eng_mlp_latent_dimensions: [512, 256, 128] # edge energy mlp latent dimensions
+
+metrics_key: validation_loss # or validation_f_rmse
+
+loss_coeffs:
+  forces: 1.
+  total_energy:
+    - 1.
+    - PerAtomMSELoss
+
+# IMPORTANT: set it init. No change afterwards usually
+r_max: 100.0
+allow_tf32: True # whether to use TensorFloat32 if it is available
+                 #  Turn on for A100 but off for V100
+root: results/
+append: false
+wandb_project: CH2NCH3
+
+# Data
+n_train: 1600  # Please leave some data for test which means n_train + n_val < total data
+n_val: 200 # Suggest to devide with 80% 10% 10% or 60% 20% 20%
+dataset_file_name: ./mlmd_2000_S0.extxyz
+chemical_symbol_to_type:
+  H: 0
+  C: 1
+  N: 2
+
+# Train
+learning_rate: 0.001 # # learning rate, we found values between 0.002 and 0.0005 to work 
+                      # best - this is often one of the most important hyperparameters to tune
+
+# lr : learning rate
+# In machine learning and statistics, the learning rate is a tuning parameter in 
+# an optimization algorithm that determines the step size at each iteration while moving toward a minimum of a loss function.
+# lr_scheduler: Adjust learning rate
+# lr scheduler, currently only supports the two options listed below, if you need more please file an issue
+# first: on-plateau, reduce lr by factory of lr_scheduler_factor if metrics_key hasn't improved for lr_scheduler_patience epoch
+lr_scheduler_name: ReduceLROnPlateau
+
+# Patience is a tolerable number of times, and if the network performance 
+# does not improve after the number of patients, the learning rate will decrease.
+lr_scheduler_patience: 50 
+lr_scheduler_factor: 0.5
+
+# stop early if a metric value is lower than the bound
+early_stopping_lower_bounds:
+  LR: 1.0e-6
+
+# early stopping based on metrics values. 
+# LR, wall and any keys printed in the log file can be used. 
+# The key can start with Training or validation. If not defined, the validation value will be used.
+early_stopping_patiences: # stop early if a metric value stopped decreasing for n epochs
+  validation_loss: 40 
+
+# Not so important setting. Keep them as default.
+# general
+seed: 123456
+dataset_seed: 123456
+default_dtype: float32
+
+# -- network --
+model_builders:
+  - allegro.model.Allegro
+  - PerSpeciesRescale
+  - ForceOutput
+  - RescaleEnergyEtc
+
+# average number of neighbors in an environment is used to normalize the sum, auto precomputed it automitcally 
+avg_num_neighbors: auto
+
+# radial basis
+# set true to train the bessel roots
+BesselBasis_trainable: false
+
+PolynomialCutoff_p: 48
+
+# - start allegro layers -
+# number of tensor product layers, 1-3 usually best, more is more accurate but slower
+embed_initial_edge: true
+two_body_latent_mlp_nonlinearity: silu
+two_body_latent_mlp_initialization: uniform
+latent_mlp_nonlinearity: silu
+latent_mlp_initialization: uniform
+latent_resnet: true
+env_embed_mlp_latent_dimensions: []
+env_embed_mlp_nonlinearity: null
+env_embed_mlp_initialization: uniform
+edge_eng_mlp_initialization: uniform
+edge_eng_mlp_nonlinearity: silu
+# - end allegro layers -
+
+# -- data --
+dataset: ase
+ase_args:
+  format: extxyz
+# logging
+wandb: false
+verbose: info
+
+# training
+max_epochs: 10000000
+train_val_split: random
+
+shuffle: true
+
+use_ema: true
+ema_decay: 0.99
+ema_use_num_updates: true
+
+# loss function
+
+# optimizer
+optimizer_name: Adam
+optimizer_params:
+  amsgrad: false #!!!!
+  betas: !!python/tuple
+    - 0.9
+    - 0.999
+  eps: 1.0e-08
+  weight_decay: 0.
+
+early_stopping_upper_bounds:
+  cumulative_wall: 604800.
+
+early_stopping_ladder_upper_bounds:
+  cumulative_wall: 604800.
+
+# output metrics
+metrics_components:
+  - - forces # key
+    - mae # "rmse" or "mae"
+  - - forces
+    - rmse
+  - - total_energy
+    - mae
+  - - total_energy
+    - rmse
+  - - total_energy
+    - mae
+    - PerAtom: True # if true, energy is normalized by the number of atoms
+  - - total_energy
+    - rmse
+    - PerAtom: True # if true, energy is normalized by the number of atoms
