@@ -145,3 +145,7 @@ You should see the CLI usage with options for `--config` and `--set`. Use
 
 With the environment active and configuration prepared, you are ready to explore
 Neural Network Zhu-Nakamura nonadiabatic dynamics simulations. Happy hacking!
+
+## Acknowledgments
+
+- `tools/wigner_sampling/wigner.py` is an unmodified copy of the Wigner sampling utility shipped with **SHARC 3.0** (Mai, S.; Avagliano, D.; Heindl, M.; Marquetand, P.; Menger, M. F. S. J.; Oppel, M.; Plasser, F.; Polonius, S.; Ruckenbauer, M.; Yinan Shu; Truhlar, D. G.; Linyao Zhang; Zobel, P.; Gonzalez, L. *SHARC3.0: Surface Hopping Including Arbitrary Couplings - Program Package for Non-Adiabatic Dynamics.* 2023. https://zenodo.org/record/7828641). The script keeps the upstream GPLv3 licensing and copyright notices.

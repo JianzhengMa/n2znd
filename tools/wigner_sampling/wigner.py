@@ -23,6 +23,14 @@
 #
 # ******************************************
 
+# N2ZND attribution:
+# This file is distributed verbatim from SHARC 3.0 (Mai, S.; Avagliano, D.; Heindl,
+# M.; Marquetand, P.; Menger, M. F. S. J.; Oppel, M.; Plasser, F.; Polonius, S.;
+# Ruckenbauer, M.; Yinan Shu; Truhlar, D. G.; Linyao Zhang; Zobel, P.; Gonzalez, L.
+# "SHARC3.0: Surface Hopping Including Arbitrary Couplings - Program Package for
+# Non-Adiabatic Dynamics." 2023. https://zenodo.org/record/7828641), without
+# modifications by the N2ZND project.
+
 
 # Script for the calculation of Wigner distributions from molden frequency files
 #
